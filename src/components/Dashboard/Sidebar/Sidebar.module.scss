@@ -1,0 +1,71 @@
+@import '../../../styles/variables';
+
+.sidebar {
+  width: 320px;
+  background-color: $primary-color;
+  color: white;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+
+  > .userList {
+    padding: 20px;
+
+    > .currentUser {
+      padding-bottom: 30px;
+    }
+
+    > .heading {
+      margin-bottom: 20px;
+    }
+
+    > ul {
+      list-style-type: none;
+      padding: 0;
+
+      > .userItem {
+        margin-bottom: 10px;
+
+        > button {
+          width: 100%;
+          padding: 10px;
+          background-color: transparent;
+          border: none;
+          color: white;
+          text-align: left;
+          font-size: 1rem;
+          cursor: pointer;
+          transition: background-color 0.3s ease;
+
+          &:hover {
+            background-color: lighten($primary-color, 10%);
+          }
+        }
+
+        &.selected > button {
+          background-color: lighten($primary-color, 15%);
+        }
+      }
+    }
+  }
+
+  > .logoutButtonContainer {
+    padding: 20px;
+
+    > .logoutButton {
+      width: 100%;
+      padding: 10px;
+      background-color: darken($primary-color, 7%);
+      border: none;
+      color: white;
+      cursor: pointer;
+      text-align: center;
+      font-size: 1rem;
+      transition: background-color 0.3s ease;
+
+      &:hover {
+        background-color: darken($primary-color, 25%);
+      }
+    }
+  }
+}

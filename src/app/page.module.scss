@@ -1,0 +1,88 @@
+@import url('https://fonts.googleapis.com/css2?family=Exo+2:wght@700&display=swap');
+@import '../styles/variables';
+
+.container {
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background-color: $secondary-color;
+
+  > .navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 40px;
+
+    > .logo {
+      font-family: 'Exo 2', sans-serif;
+
+      > h1 {
+        font-size: 1.8rem;
+        font-weight: bold;
+        color: $primary-color;
+      }
+    }
+
+    > .navLinks {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+
+      > a {
+        color: $primary-color;
+        text-decoration: none;
+        font-size: 1rem;
+
+        &:hover {
+          color: $primary-color;
+        }
+      }
+
+      > .tryPulse {
+        background-color: $primary-color;
+        color: white;
+        padding: 8px 15px;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+
+        &:hover {
+          background-color: darken($primary-color, 5%);
+          color: white;
+        }
+      }
+    }
+  }
+
+  > .hero {
+    text-align: center;
+    padding: 120px 100px;
+    display: flex;
+
+    > .heroText {
+      text-align: left;
+
+      > h1 {
+        font-size: 2.8rem;
+        font-weight: bold;
+        color: $primary-color;
+      }
+
+      > p {
+        font-size: 1.2rem;
+        color: $primary-color;
+        margin: 20px 0 30px;
+      }
+    }
+
+    > .heroImage {
+      width: 60vw;
+      max-width: 600px;
+
+      > img {
+        width: 100%;
+        height: auto;
+      }
+    }
+  }
+}
