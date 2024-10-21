@@ -1,8 +1,8 @@
-import { getUsers } from '@/lib/getUsers';
-import { getCurrentUser } from '@/lib/getCurrentUser';
+import { getUsers } from "@/lib/getUsers";
+import { getCurrentUser } from "@/lib/getCurrentUser";
 
-import styles from './page.module.scss';
-import DashboardContainer from '@/components/Dashboard/DashboardContainer';
+import styles from "./page.module.scss";
+import DashboardContainer from "./components/DashboardContainer";
 
 const DashboardPage = async () => {
   const users = await getUsers();

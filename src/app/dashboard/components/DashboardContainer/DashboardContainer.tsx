@@ -1,9 +1,9 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import Sidebar from '@/components/Dashboard/Sidebar';
-import Chat from '@/components/Dashboard/Chat';
-import { SelectedChat, SelectedUser, User } from '@/types/interfaces';
+import { useState } from "react";
+import Sidebar from "../Sidebar";
+import Chat from "../Chat";
+import { SelectedChat, SelectedUser, User } from "@/types/interfaces";
 
 interface DashboardProps {
   users: Array<{ id: number; displayName: string }>;
