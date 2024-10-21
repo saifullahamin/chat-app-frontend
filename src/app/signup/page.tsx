@@ -40,7 +40,7 @@ const Signup: React.FC = () => {
             <hr /> <span>or</span> <hr />
           </div>
 
-          <AuthButton text="Already have an account? Login" link="/signup" />
+          <AuthButton text="Already have an account? Login" link="/login" />
         </form>
       </div>
     </div>

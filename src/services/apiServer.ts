@@ -1,10 +1,16 @@
 import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
 
+interface CacheOptions {
+  revalidate?: number;
+  tags?: string[];
+  cache?: "no-store" | "force-cache" | "no-cache";
+}
+
 const apiFetch = async (
   url: string,
   options: RequestInit = {},
-  revalidate?: number
+  cacheOptions: CacheOptions = {}
 ) => {
   const cookieStore = cookies();
   const accessToken = cookieStore.get("accessToken")?.value;
@@ -18,9 +24,18 @@ const apiFetch = async (
     },
   };
 
+  if (!cacheOptions.revalidate && cacheOptions.cache) {
+    cacheOptions.cache = cacheOptions.cache;
+  }
+  const nextOptions = {
+    revalidate: cacheOptions.revalidate,
+    tags: cacheOptions.tags,
+    cache: !cacheOptions.revalidate ? cacheOptions.cache : "no-cache",
+  };
+
   let response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}${url}`, {
     ...defaultOptions,
-    next: revalidate ? { revalidate } : {},
+    next: nextOptions,
   });
 
   if (response.status === 401 && refreshToken) {
@@ -42,7 +57,7 @@ const apiFetch = async (
           ...defaultOptions.headers,
           Cookie: `accessToken=${newAccessToken}; refreshToken=${refreshToken}`,
         },
-        next: revalidate ? { revalidate } : {},
+        next: nextOptions,
       });
     } else {
       throw new Error("Unauthorized");
