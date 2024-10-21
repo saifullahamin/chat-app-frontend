@@ -1,9 +1,6 @@
 "use server";
 
 import { cookies } from "next/headers";
-import jwt from "jsonwebtoken";
-import bcrypt from "bcrypt";
-import User from "@/models/userModel";
 import { redirect } from "next/navigation";
 
 export async function loginAction(formData: FormData) {
@@ -11,91 +8,51 @@ export async function loginAction(formData: FormData) {
   const passwordEntry = formData.get("password")?.toString();
   const cookieStore = cookies();
 
-  if (!emailEntry || typeof emailEntry !== "string") {
-    cookieStore.set("loginError", "Invalid email", {
-      path: "/",
-      maxAge: 10,
-    });
-    return;
-  }
-  if (!passwordEntry || typeof passwordEntry !== "string") {
-    cookieStore.set("loginError", "Invalid password", {
-      path: "/",
-      maxAge: 10,
-    });
-    return;
-  }
-
-  const user = await User.findOne({ where: { email: emailEntry } });
-  if (!user) {
-    cookieStore.set("loginError", "Invalid credentials", {
-      path: "/",
-      maxAge: 10,
-    });
-    return;
-  }
-
-  const isPasswordValid = await bcrypt.compare(passwordEntry, user.password);
-  if (!isPasswordValid) {
-    cookieStore.set("loginError", "Invalid credentials", {
-      path: "/",
-      maxAge: 10,
-    });
-    return;
-  }
-
-  const accessToken = jwt.sign({ id: user.id }, process.env.JWT_SECRET!, {
-    expiresIn: "15m",
-  });
-  const refreshToken = jwt.sign(
-    { id: user.id },
-    process.env.JWT_REFRESH_SECRET!,
+  const response = await fetch(
+    `${process.env.NEXT_PUBLIC_API_URL}/auth/login`,
     {
-      expiresIn: "7d",
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ email: emailEntry, password: passwordEntry }),
     }
   );
 
-  cookieStore.set("accessToken", accessToken, {
-    httpOnly: true,
-    secure: process.env.NEXT_PUBLIC_ENV === "production",
-    maxAge: 15 * 60,
-    path: "/",
-  });
-  cookieStore.set("refreshToken", refreshToken, {
-    httpOnly: true,
-    secure: process.env.NEXT_PUBLIC_ENV === "production",
-    maxAge: 7 * 24 * 60 * 60,
-    path: "/",
-  });
+  if (response.ok) {
+    const data = await response.json();
+    cookieStore.set("accessToken", data.accessToken, {
+      httpOnly: true,
+      secure: process.env.NEXT_PUBLIC_ENV === "production",
+      maxAge: 15 * 60,
+      path: "/",
+    });
+    cookieStore.set("refreshToken", data.refreshToken, {
+      httpOnly: true,
+      secure: process.env.NEXT_PUBLIC_ENV === "production",
+      maxAge: 7 * 24 * 60 * 60,
+      path: "/",
+    });
+    redirect("/dashboard");
+  } else {
+    const errorData = await response.json();
+    const errorMessage =
+      errorData.error || "Authentication failed. Please try again.";
 
-  redirect("/dashboard");
+    cookieStore.set("loginError", errorMessage, {
+      path: "/",
+      maxAge: 10,
+    });
+  }
 }
 
 export async function signupAction(formData: FormData) {
-  const email = formData.get("email")?.toString();
-  const password = formData.get("password")?.toString();
+  const emailEntry = formData.get("email")?.toString();
+  const passwordEntry = formData.get("password")?.toString();
   const displayName = formData.get("displayName")?.toString();
-
   const cookieStore = cookies();
 
-  if (!email || !password || !displayName) {
-    cookieStore.set("signupError", "All fields are required", {
-      path: "/",
-      maxAge: 10,
-    });
-    return;
-  }
-
-  const existingUser = await User.findOne({ where: { email } });
-  if (existingUser) {
-    cookieStore.set("signupError", "User already exists", {
-      path: "/",
-      maxAge: 10,
-    });
-    return;
-  }
-
-  const { strength, valid } = checkPasswordStrength(password);
+  const { strength, valid } = checkPasswordStrength(passwordEntry!);
   if (!valid) {
     cookieStore.set("signupError", `Password strength is ${strength}`, {
       path: "/",
@@ -103,47 +60,47 @@ export async function signupAction(formData: FormData) {
     });
     return;
   }
-  try {
-    const hashedPassword = await bcrypt.hash(password, 10);
-    const user = await User.create({
-      displayName,
-      email,
-      password: hashedPassword,
-    });
 
-    const accessToken = jwt.sign({ id: user.id }, process.env.JWT_SECRET!, {
-      expiresIn: "15m",
-    });
-    const refreshToken = jwt.sign(
-      { id: user.id },
-      process.env.JWT_REFRESH_SECRET!,
-      {
-        expiresIn: "7d",
-      }
-    );
+  const response = await fetch(
+    `${process.env.NEXT_PUBLIC_API_URL}/auth/signup`,
+    {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        email: emailEntry,
+        password: passwordEntry,
+        displayName,
+      }),
+    }
+  );
 
-    cookieStore.set("accessToken", accessToken, {
+  if (response.ok) {
+    const data = await response.json();
+    cookieStore.set("accessToken", data.accessToken, {
       httpOnly: true,
       secure: process.env.NEXT_PUBLIC_ENV === "production",
       maxAge: 15 * 60,
       path: "/",
     });
-    cookieStore.set("refreshToken", refreshToken, {
+    cookieStore.set("refreshToken", data.refreshToken, {
       httpOnly: true,
       secure: process.env.NEXT_PUBLIC_ENV === "production",
       maxAge: 7 * 24 * 60 * 60,
       path: "/",
     });
-  } catch (error) {
-    console.log(error);
-    cookieStore.set("signupError", "An unexpected error occurred", {
+    redirect("/dashboard");
+  } else {
+    const errorData = await response.json();
+    const errorMessage =
+      errorData.error || "Authentication failed. Please try again.";
+
+    cookieStore.set("signupError", errorMessage, {
       path: "/",
       maxAge: 10,
     });
-    return;
   }
-
-  redirect("/dashboard");
 }
 
 function checkPasswordStrength(password: string) {
