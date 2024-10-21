@@ -1,11 +1,11 @@
-'use client';
+"use client";
 
-import React from 'react';
-import MessageList from '../MessageList';
-import styles from './Chat.module.scss';
-import { SelectedChat, SelectedUser, User } from '@/types/interfaces';
-import useSendMessage from '@/hooks/useSendMessage';
-import useSocket from '@/hooks/useSocket';
+import React from "react";
+import MessageList from "../MessageList";
+import styles from "./Chat.module.scss";
+import { SelectedChat, SelectedUser, User } from "@/types/interfaces";
+import useSendMessage from "@/hooks/useSendMessage";
+import useSocket from "@/hooks/useSocket";
 
 interface ChatProps {
   selectedChat: SelectedChat | null;
@@ -19,7 +19,7 @@ const Chat: React.FC<ChatProps> = ({
   currUser,
 }) => {
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === 'Enter' && !e.shiftKey) {
+    if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault();
       handleSendMessage(selectedChat!.id);
     }
@@ -42,8 +42,8 @@ const Chat: React.FC<ChatProps> = ({
           <MessageList selectedChat={selectedChat} />
           <div className={styles.chatInput}>
             <input
-              type='text'
-              placeholder='Type your message...'
+              type="text"
+              placeholder="Type your message..."
               value={messageContent}
               onChange={(e) => setMessageContent(e.target.value)}
               onKeyDown={handleKeyDown}

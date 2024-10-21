@@ -1,23 +1,20 @@
 const apiFetch = async (url: string, options: RequestInit = {}) => {
   const defaultOptions: RequestInit = {
     ...options,
-    credentials: 'include',
+    credentials: "include",
   };
 
   const response = await fetch(
-    `${process.env.NEXT_PUBLIC_BACKEND_URL}${url}`,
+    `${process.env.NEXT_PUBLIC_API_URL}${url}`,
     defaultOptions
   );
 
   if (response.status === 401) {
     const refreshed = await refreshToken();
     if (refreshed) {
-      return fetch(
-        `${process.env.NEXT_PUBLIC_BACKEND_URL}${url}`,
-        defaultOptions
-      );
+      return fetch(`${process.env.NEXT_PUBLIC_API_URL}${url}`, defaultOptions);
     } else {
-      throw new Error('Unauthorized');
+      throw new Error("Unauthorized");
     }
   }
 
@@ -29,10 +26,10 @@ const apiFetch = async (url: string, options: RequestInit = {}) => {
 
 const refreshToken = async (): Promise<boolean> => {
   const refreshResponse = await fetch(
-    `${process.env.NEXT_PUBLIC_BACKEND_URL}/auth/refresh`,
+    `${process.env.NEXT_PUBLIC_API_URL}/auth/refresh`,
     {
-      method: 'POST',
-      credentials: 'include',
+      method: "POST",
+      credentials: "include",
     }
   );
 

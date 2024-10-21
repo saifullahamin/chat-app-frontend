@@ -1,5 +1,5 @@
-import { cookies } from 'next/headers';
-import { NextResponse } from 'next/server';
+import { cookies } from "next/headers";
+import { NextResponse } from "next/server";
 
 const apiFetch = async (
   url: string,
@@ -7,8 +7,8 @@ const apiFetch = async (
   revalidate?: number
 ) => {
   const cookieStore = cookies();
-  const accessToken = cookieStore.get('accessToken')?.value;
-  const refreshToken = cookieStore.get('refreshToken')?.value;
+  const accessToken = cookieStore.get("accessToken")?.value;
+  const refreshToken = cookieStore.get("refreshToken")?.value;
 
   const defaultOptions: RequestInit = {
     ...options,
@@ -18,7 +18,7 @@ const apiFetch = async (
     },
   };
 
-  let response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}${url}`, {
+  let response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}${url}`, {
     ...defaultOptions,
     next: revalidate ? { revalidate } : {},
   });
@@ -26,17 +26,17 @@ const apiFetch = async (
   if (response.status === 401 && refreshToken) {
     const refreshed = await refreshTokenFunction(refreshToken);
     if (refreshed) {
-      const newAccessToken = cookieStore.get('accessToken')?.value;
+      const newAccessToken = cookieStore.get("accessToken")?.value;
 
       if (newAccessToken) {
         const responseWithCookie = NextResponse.next();
-        responseWithCookie.cookies.set('accessToken', newAccessToken, {
+        responseWithCookie.cookies.set("accessToken", newAccessToken, {
           httpOnly: true,
-          secure: process.env.NODE_ENV === 'production',
+          secure: process.env.NEXT_PUBLIC_ENV === "production",
           maxAge: 15 * 60, // 15 minutes
         });
       }
-      response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}${url}`, {
+      response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}${url}`, {
         ...defaultOptions,
         headers: {
           ...defaultOptions.headers,
@@ -45,7 +45,7 @@ const apiFetch = async (
         next: revalidate ? { revalidate } : {},
       });
     } else {
-      throw new Error('Unauthorized');
+      throw new Error("Unauthorized");
     }
   }
 
@@ -58,9 +58,9 @@ const apiFetch = async (
 
 const refreshTokenFunction = async (refreshToken: string): Promise<boolean> => {
   const refreshResponse = await fetch(
-    `${process.env.NEXT_PUBLIC_BACKEND_URL}/auth/refresh`,
+    `${process.env.NEXT_PUBLIC_API_URL}/auth/refresh`,
     {
-      method: 'POST',
+      method: "POST",
       headers: {
         Cookie: `refreshToken=${refreshToken}`,
       },

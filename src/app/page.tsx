@@ -1,8 +1,9 @@
-import Image from 'next/image';
-import Link from 'next/link';
-import styles from './page.module.scss';
-import heroImage from '/public/hero-image.png';
-import AuthModals from '@/components/Auth/AuthModals';
+import Image from "next/image";
+import Link from "next/link";
+import styles from "./page.module.scss";
+import heroImage from "/public/hero-image.png";
+import LoginButton from "@/components/Auth/LoginButton";
+import SignupButton from "@/components/Auth/SignupButton";
 
 const HomePage = () => {
   return (
@@ -13,11 +14,11 @@ const HomePage = () => {
           <h1>Pulse</h1>
         </div>
         <div className={styles.navLinks}>
-          <Link href='/privacy'>Privacy</Link>
-          <Link href='/help-center'>Help Center</Link>
-          <Link href='/pulse-web'>Pulse Web</Link>
-          <Link href='/download'>Download</Link>
-          <Link href='/dashboard' className={styles.tryPulse}>
+          <Link href="/privacy">Privacy</Link>
+          <Link href="/help-center">Help Center</Link>
+          <Link href="/pulse-web">Pulse Web</Link>
+          <Link href="/download">Download</Link>
+          <Link href="/dashboard" className={styles.tryPulse}>
             Dashboard
           </Link>
         </div>
@@ -31,14 +32,17 @@ const HomePage = () => {
             Connect effortlessly across all devices with Pulse. Break free from
             limitations and redefine communication, anytime, anywhere.
           </p>
-          <AuthModals />
+          <div className={styles.buttonGroup}>
+            <LoginButton />
+            <SignupButton />
+          </div>
         </div>
 
         {/* Hero Image */}
         <div className={styles.heroImage}>
           <Image
             src={heroImage}
-            alt='Global communication graphic'
+            alt="Global communication graphic"
             width={500}
             height={300}
             priority={true}

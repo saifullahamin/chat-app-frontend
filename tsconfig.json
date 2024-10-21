@@ -20,9 +20,15 @@
     "paths": {
       "@/*": ["./src/*"]
     },
-    "noUnusedLocals": false, // Disable unused local variables error
-    "noUnusedParameters": false // Disable unused parameters error
+    "noUnusedLocals": false,
+    "noUnusedParameters": false
   },
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],
+  "include": [
+    "next-env.d.ts",
+    "**/*.ts",
+    "**/*.tsx",
+    ".next/types/**/*.ts",
+    "types/iron-session.d.ts"
+  ],
   "exclude": ["node_modules"]
 }

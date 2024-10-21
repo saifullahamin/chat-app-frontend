@@ -1,5 +1,5 @@
-@import url('https://fonts.googleapis.com/css2?family=Exo+2:wght@700&display=swap');
-@import '../styles/variables';
+@import url("https://fonts.googleapis.com/css2?family=Exo+2:wght@700&display=swap");
+@import "../styles/variables";
 
 .container {
   height: 100vh;
@@ -14,7 +14,7 @@
     padding: 40px;
 
     > .logo {
-      font-family: 'Exo 2', sans-serif;
+      font-family: "Exo 2", sans-serif;
 
       > h1 {
         font-size: 1.8rem;
@@ -85,4 +85,10 @@
       }
     }
   }
+}
+
+.buttonGroup {
+  display: flex;
+  gap: 20px;
+  margin-top: 20px;
 }

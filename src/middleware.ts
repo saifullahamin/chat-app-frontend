@@ -1,28 +1,31 @@
-import { NextResponse } from 'next/server';
-import type { NextRequest } from 'next/server';
+import { NextResponse } from "next/server";
+import type { NextRequest } from "next/server";
 
 export async function middleware(request: NextRequest) {
-  const accessToken = request.cookies.get('accessToken')?.value;
-  const refreshToken = request.cookies.get('refreshToken')?.value;
+  const accessToken = request.cookies.get("accessToken")?.value;
+  const refreshToken = request.cookies.get("refreshToken")?.value;
 
-  const isDashboard = request.nextUrl.pathname.startsWith('/dashboard');
-  const isRoot = request.nextUrl.pathname === '/';
+  const isDashboard = request.nextUrl.pathname.startsWith("/dashboard");
+  const isRoot = request.nextUrl.pathname === "/";
+  const isLogin = request.nextUrl.pathname === "/login";
+  const isSignup = request.nextUrl.pathname === "/signup";
 
-  if (!refreshToken && isDashboard) {
-    return NextResponse.redirect(new URL('/', request.url));
-  }
-
-  if (!refreshToken && isRoot) {
-    return NextResponse.next();
+  if (!refreshToken) {
+    if (isDashboard) {
+      return NextResponse.redirect(new URL("/", request.url));
+    }
+    if (isLogin || isSignup) {
+      return NextResponse.next();
+    }
   }
 
   try {
     const verifyTokenResponse = await fetch(
-      `${process.env.NEXT_PUBLIC_BACKEND_URL}/auth/verify-token`,
+      `${process.env.NEXT_PUBLIC_API_URL}/auth/verify-token`,
       {
-        method: 'POST',
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
           Cookie: `accessToken=${accessToken}; refreshToken=${refreshToken}`,
         },
       }
@@ -34,27 +37,37 @@ export async function middleware(request: NextRequest) {
       const response = NextResponse.next();
 
       if (data.newAccessToken) {
-        response.cookies.set('accessToken', data.newAccessToken, {
+        response.cookies.set("accessToken", data.newAccessToken, {
           httpOnly: true,
-          secure: process.env.NODE_ENV === 'production',
-          maxAge: 15 * 60 * 1000, // 15 minutes
+          secure: process.env.NEXT_PUBLIC_ENV === "production",
+          maxAge: 15 * 60, // 15 minutes in seconds
         });
       }
 
+      if (isLogin || isSignup) {
+        return NextResponse.redirect(new URL("/dashboard", request.url));
+      }
+
       if (isRoot) {
-        return NextResponse.redirect(new URL('/dashboard', request.url));
+        return NextResponse.redirect(new URL("/dashboard", request.url));
       }
 
       return response;
     } else {
-      return NextResponse.redirect(new URL('/', request.url));
+      if (isDashboard) {
+        return NextResponse.redirect(new URL("/", request.url));
+      }
+      return NextResponse.next();
     }
   } catch (error) {
-    console.error('Error verifying token:', error);
-    return NextResponse.redirect(new URL('/', request.url));
+    console.error("Error verifying token:", error);
+    if (isDashboard) {
+      return NextResponse.redirect(new URL("/", request.url));
+    }
+    return NextResponse.next();
   }
 }
 
 export const config = {
-  matcher: ['/dashboard/:path*', '/'],
+  matcher: ["/dashboard/:path*", "/", "/login", "/signup"],
 };
