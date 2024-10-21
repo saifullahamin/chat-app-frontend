@@ -1,20 +1,10 @@
 import styles from "./page.module.scss";
 import { loginAction } from "../actions/authActions";
+import { cookies } from "next/headers";
 import AuthButton from "@/components/Auth/AuthButton";
-import { Metadata } from "next";
 
-export const metadata: Metadata = {
-  title: "Login",
-  description: "Login to your account",
-};
-
-const Login = async ({
-  searchParams,
-}: {
-  searchParams: { error?: string };
-}) => {
-  const error = searchParams.error;
-
+const Login: React.FC = () => {
+  const loginError = cookies().get("loginError")?.value;
   return (
     <div className={styles.modalOverlay}>
       <div className={styles.modalContent}>
@@ -38,9 +28,7 @@ const Login = async ({
           <button type="submit" className={styles.loginButton}>
             Login
           </button>
-          {error && (
-            <p className={styles.errorMessage}>{decodeURIComponent(error)}</p>
-          )}
+          {loginError && <p className={styles.errorMessage}>{loginError}</p>}
 
           <div className={styles.orSeparator}>
             <hr /> <span>or</span> <hr />

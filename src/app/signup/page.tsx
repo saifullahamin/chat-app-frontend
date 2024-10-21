@@ -1,20 +1,10 @@
 import { signupAction } from "../actions/authActions";
 import styles from "./page.module.scss";
+import { cookies } from "next/headers";
 import AuthButton from "@/components/Auth/AuthButton";
-import { Metadata } from "next";
 
-export const metadata: Metadata = {
-  title: "Sign Up",
-  description: "Create a new account",
-};
-
-interface SignupProps {
-  searchParams: { error?: string };
-}
-
-const Signup = async ({ searchParams }: SignupProps) => {
-  const error = searchParams.error;
-
+const Signup: React.FC = () => {
+  const signupError = cookies().get("signupError")?.value;
   return (
     <div className={styles.modalOverlay}>
       <div className={styles.modalContent}>
@@ -44,15 +34,13 @@ const Signup = async ({ searchParams }: SignupProps) => {
           <button type="submit" className={styles.signupButton}>
             Sign Up
           </button>
-          {error && (
-            <p className={styles.errorMessage}>{decodeURIComponent(error)}</p>
-          )}
+          {signupError && <p className={styles.errorMessage}>{signupError}</p>}
 
           <div className={styles.orSeparator}>
             <hr /> <span>or</span> <hr />
           </div>
 
-          <AuthButton text="Already have an account? Login" link="/login" />
+          <AuthButton text="Already have an account? Login" link="/signup" />
         </form>
       </div>
     </div>

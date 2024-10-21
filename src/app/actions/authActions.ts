@@ -12,20 +12,36 @@ export async function loginAction(formData: FormData) {
   const cookieStore = cookies();
 
   if (!emailEntry || typeof emailEntry !== "string") {
-    redirect("/login?error=" + encodeURIComponent("Invalid email"));
+    cookieStore.set("loginError", "Invalid email", {
+      path: "/",
+      maxAge: 10,
+    });
+    return;
   }
   if (!passwordEntry || typeof passwordEntry !== "string") {
-    redirect("/login?error=" + encodeURIComponent("Invalid password"));
+    cookieStore.set("loginError", "Invalid password", {
+      path: "/",
+      maxAge: 10,
+    });
+    return;
   }
 
   const user = await User.findOne({ where: { email: emailEntry } });
   if (!user) {
-    redirect("/login?error=" + encodeURIComponent("Invalid credentials"));
+    cookieStore.set("loginError", "Invalid credentials", {
+      path: "/",
+      maxAge: 10,
+    });
+    return;
   }
 
   const isPasswordValid = await bcrypt.compare(passwordEntry, user.password);
   if (!isPasswordValid) {
-    redirect("/login?error=" + encodeURIComponent("Invalid credentials"));
+    cookieStore.set("loginError", "Invalid credentials", {
+      path: "/",
+      maxAge: 10,
+    });
+    return;
   }
 
   const accessToken = jwt.sign({ id: user.id }, process.env.JWT_SECRET!, {
@@ -63,21 +79,30 @@ export async function signupAction(formData: FormData) {
   const cookieStore = cookies();
 
   if (!email || !password || !displayName) {
-    redirect("/signup?error=" + encodeURIComponent("All fields are required"));
+    cookieStore.set("signupError", "All fields are required", {
+      path: "/",
+      maxAge: 10,
+    });
+    return;
   }
 
   const existingUser = await User.findOne({ where: { email } });
   if (existingUser) {
-    redirect("/signup?error=" + encodeURIComponent("User already exists"));
+    cookieStore.set("signupError", "User already exists", {
+      path: "/",
+      maxAge: 10,
+    });
+    return;
   }
 
   const { strength, valid } = checkPasswordStrength(password);
   if (!valid) {
-    redirect(
-      "/signup?error=" + encodeURIComponent(`Password strength is ${strength}`)
-    );
+    cookieStore.set("signupError", `Password strength is ${strength}`, {
+      path: "/",
+      maxAge: 10,
+    });
+    return;
   }
-
   try {
     const hashedPassword = await bcrypt.hash(password, 10);
     const user = await User.create({
@@ -109,14 +134,16 @@ export async function signupAction(formData: FormData) {
       maxAge: 7 * 24 * 60 * 60,
       path: "/",
     });
-
-    redirect("/dashboard");
   } catch (error) {
     console.log(error);
-    redirect(
-      "/signup?error=" + encodeURIComponent("An unexpected error occurred")
-    );
+    cookieStore.set("signupError", "An unexpected error occurred", {
+      path: "/",
+      maxAge: 10,
+    });
+    return;
   }
+
+  redirect("/dashboard");
 }
 
 function checkPasswordStrength(password: string) {
