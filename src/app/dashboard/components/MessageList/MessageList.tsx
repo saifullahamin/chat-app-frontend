@@ -1,10 +1,10 @@
-'use client';
+"use client";
 
-import React, { useEffect, useRef } from 'react';
-import MessageItem from '../MessageItem';
-import styles from './MessageList.module.scss';
-import { SelectedChat, Message } from '@/types/interfaces';
-import useMessages from '@/hooks/useMessages';
+import React, { useEffect, useRef } from "react";
+import MessageItem from "../MessageItem";
+import styles from "./MessageList.module.scss";
+import { SelectedChat, Message } from "@/types/interfaces";
+import useMessages from "@/app/dashboard/hooks/useMessages";
 
 export interface MessageListProps {
   selectedChat: SelectedChat | null;

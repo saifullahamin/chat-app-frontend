@@ -4,8 +4,8 @@ import React from "react";
 import MessageList from "../MessageList";
 import styles from "./Chat.module.scss";
 import { SelectedChat, SelectedUser, User } from "@/types/interfaces";
-import useSendMessage from "@/hooks/useSendMessage";
-import useSocket from "@/hooks/useSocket";
+import useSendMessage from "@/app/dashboard/hooks/useSendMessage";
+import useSocket from "@/app/dashboard/hooks/useSocket";
 
 interface ChatProps {
   selectedChat: SelectedChat | null;

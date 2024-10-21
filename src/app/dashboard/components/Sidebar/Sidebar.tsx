@@ -1,8 +1,8 @@
-import React from 'react';
-import { User, SelectedChat, SelectedUser } from '@/types/interfaces';
-import styles from './Sidebar.module.scss';
-import useUserSelection from '@/hooks/useUserSelection';
-import useLogout from '@/hooks/useLogout';
+import React from "react";
+import { User, SelectedChat, SelectedUser } from "@/types/interfaces";
+import styles from "./Sidebar.module.scss";
+import useUserSelection from "@/app/dashboard/hooks/useUserSelection";
+import useLogout from "@/app/dashboard/hooks/useLogout";
 
 interface SidebarProps {
   users: User[];
@@ -37,7 +37,7 @@ const Sidebar: React.FC<SidebarProps> = ({
               <li
                 key={user.id}
                 className={`${styles.userItem} ${
-                  activeUserId === user.id ? styles.selected : ''
+                  activeUserId === user.id ? styles.selected : ""
                 }`}
                 onClick={() => handleUserSelect(user.id, user.displayName)}
               >
