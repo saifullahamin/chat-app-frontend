@@ -1,4 +1,4 @@
-@import '../../styles/variables.scss';
+@import "@/styles/variables.scss";
 
 .modalOverlay {
   position: fixed;
@@ -81,12 +81,19 @@
       }
 
       > .passwordStrength {
-        font-size: 0.9rem;
-        color: $primary-color;
-        text-align: left;
+        font-size: 0.85rem;
+        font-weight: bold;
 
-        > span {
-          font-weight: bold;
+        &.weak {
+          color: $error-color;
+        }
+
+        &.medium {
+          color: $success-color;
+        }
+
+        &.strong {
+          color: $success-color;
         }
       }
 
