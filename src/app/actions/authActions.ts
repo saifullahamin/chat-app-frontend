@@ -36,14 +36,29 @@ export async function loginAction(formData: FormData) {
     redirect("/dashboard");
   } else {
     const errorData = await response.json();
-    const errorMessage =
-      errorData.error || "Authentication failed. Please try again.";
-
-    cookieStore.set("loginError", errorMessage, {
-      path: "/",
-      maxAge: 10,
-    });
+    throw new Error(
+      errorData.error || "Authentication failed. Please try again."
+    );
   }
+}
+
+export async function logoutAction() {
+  const cookieStore = cookies();
+
+  cookieStore.set("accessToken", "", {
+    httpOnly: true,
+    secure: process.env.NEXT_PUBLIC_ENV === "production",
+    maxAge: 0,
+    path: "/",
+  });
+  cookieStore.set("refreshToken", "", {
+    httpOnly: true,
+    secure: process.env.NEXT_PUBLIC_ENV === "production",
+    maxAge: 0,
+    path: "/",
+  });
+
+  redirect("/");
 }
 
 export async function signupAction(formData: FormData) {
@@ -51,15 +66,6 @@ export async function signupAction(formData: FormData) {
   const passwordEntry = formData.get("password")?.toString();
   const displayName = formData.get("displayName")?.toString();
   const cookieStore = cookies();
-
-  const { strength, valid } = checkPasswordStrength(passwordEntry!);
-  if (!valid) {
-    cookieStore.set("signupError", `Password strength is ${strength}`, {
-      path: "/",
-      maxAge: 10,
-    });
-    return;
-  }
 
   const response = await fetch(
     `${process.env.NEXT_PUBLIC_API_URL}/auth/signup`,
@@ -93,25 +99,8 @@ export async function signupAction(formData: FormData) {
     redirect("/dashboard");
   } else {
     const errorData = await response.json();
-    const errorMessage =
-      errorData.error || "Authentication failed. Please try again.";
-
-    cookieStore.set("signupError", errorMessage, {
-      path: "/",
-      maxAge: 10,
-    });
-  }
-}
-
-function checkPasswordStrength(password: string) {
-  const strongPassword = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/;
-  const mediumPassword = /^(?=.*[a-z])(?=.*\d).{6,}$/;
-
-  if (strongPassword.test(password)) {
-    return { strength: "strong", valid: true };
-  } else if (mediumPassword.test(password)) {
-    return { strength: "medium", valid: true };
-  } else {
-    return { strength: "weak", valid: false };
+    throw new Error(
+      errorData.error || "Authentication failed. Please try again."
+    );
   }
 }
