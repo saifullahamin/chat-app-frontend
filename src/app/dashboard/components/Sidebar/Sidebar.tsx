@@ -2,7 +2,7 @@ import React from "react";
 import { User, SelectedChat, SelectedUser } from "@/types/interfaces";
 import styles from "./Sidebar.module.scss";
 import useUserSelection from "@/app/dashboard/hooks/useUserSelection";
-import useLogout from "@/app/dashboard/hooks/useLogout";
+import { logoutAction } from "@/app/actions/authActions";
 
 interface SidebarProps {
   users: User[];
@@ -18,7 +18,14 @@ const Sidebar: React.FC<SidebarProps> = ({
   setSelectedUser,
   currUser,
 }) => {
-  const { handleLogout } = useLogout();
+  const handleLogout = async () => {
+    try {
+      await logoutAction();
+    } catch (error) {
+      console.error("Logout failed:", error);
+    }
+  };
+
   const { handleUserSelect, activeUserId } = useUserSelection(
     setSelectedChat,
     setSelectedUser,
