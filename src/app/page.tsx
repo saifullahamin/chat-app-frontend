@@ -2,8 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import styles from "./page.module.scss";
 import heroImage from "/public/hero-image.png";
-import LoginButton from "@/components/Auth/LoginButton";
-import SignupButton from "@/components/Auth/SignupButton";
+import AuthModals from "@/components/Auth/AuthModals";
 
 const HomePage = () => {
   return (
@@ -33,8 +32,7 @@ const HomePage = () => {
             limitations and redefine communication, anytime, anywhere.
           </p>
           <div className={styles.buttonGroup}>
-            <LoginButton />
-            <SignupButton />
+            <AuthModals />
           </div>
         </div>
 
