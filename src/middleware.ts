@@ -7,16 +7,9 @@ export async function middleware(request: NextRequest) {
 
   const isDashboard = request.nextUrl.pathname.startsWith("/dashboard");
   const isRoot = request.nextUrl.pathname === "/";
-  const isLogin = request.nextUrl.pathname === "/login";
-  const isSignup = request.nextUrl.pathname === "/signup";
 
-  if (!refreshToken) {
-    if (isDashboard) {
-      return NextResponse.redirect(new URL("/", request.url));
-    }
-    if (isLogin || isSignup) {
-      return NextResponse.next();
-    }
+  if (!refreshToken && isDashboard) {
+    return NextResponse.redirect(new URL("/", request.url));
   }
 
   try {
@@ -40,12 +33,8 @@ export async function middleware(request: NextRequest) {
         response.cookies.set("accessToken", data.newAccessToken, {
           httpOnly: true,
           secure: process.env.NEXT_PUBLIC_ENV === "production",
-          maxAge: 15 * 60, // 15 minutes in seconds
+          maxAge: 15 * 60, // 15 minutes
         });
-      }
-
-      if (isLogin || isSignup) {
-        return NextResponse.redirect(new URL("/dashboard", request.url));
       }
 
       if (isRoot) {
@@ -69,5 +58,5 @@ export async function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/dashboard/:path*", "/", "/login", "/signup"],
+  matcher: ["/dashboard/:path*", "/"],
 };
